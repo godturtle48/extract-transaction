@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trợ Lý Sao Kê -> MISA</title>
+    <link rel="stylesheet" href="popup.css">
+    <script src="../lib/pdf.min.js"></script>
+    <script src="../lib/pdf_parser.js"></script>
+</head>
+<body>
+    <div class="popup-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-area">
+                <img src="../icons/icon48.png" alt="Logo" class="logo-img">
+                <div>
+                    <h1 class="title">Trợ Lý Sao Kê Ngân Hàng</h1>
+                    <p class="subtitle">Tự động điền Sổ Thu Chi MISA</p>
+                </div>
+            </div>
+            <div id="misaStatus" class="status-pill status-disconnected">
+                <span class="status-dot"></span>
+                <span id="misaStatusText">Chưa mở MISA</span>
+            </div>
+        </header>
+
+        <!-- MISA Navigation Banner (if not on MISA tab) -->
+        <div id="misaNavBanner" class="nav-banner" style="display: none;">
+            <span>Bạn chưa mở trang thêm giao dịch MISA:</span>
+            <button id="btnOpenMisa" class="btn-sm-primary">Mở MISA ngay ↗</button>
+        </div>
+
+        <!-- Account / Wallet Combobox from MISA -->
+        <div class="account-bar" id="popupAccountBar">
+            <label class="account-lbl" for="popupAccountSelect">🏦 Tài khoản / Ví:</label>
+            <select id="popupAccountSelect" class="account-select">
+                <option value="">-- Giữ nguyên tài khoản mặc định MISA --</option>
+            </select>
+        </div>
+
+        <!-- Dropzone -->
+        <div class="dropzone" id="popupDropzone">
+            <input type="file" id="popupFileInput" accept=".pdf" style="display: none;">
+            <div class="drop-icon">📄</div>
+            <div class="drop-text">Chọn hoặc thả file PDF sao kê</div>
+            <div class="drop-hint">Hỗ trợ Techcombank, VCB, MBBank...</div>
+        </div>
+
+        <div id="popupLoading" class="loading" style="display: none;">
+            ⏳ Đang phân tích file PDF...
+        </div>
+
+        <!-- Transactions Section -->
+        <div id="txSection" class="tx-section" style="display: none;">
+            <!-- KPI Summary Bar -->
+            <div class="kpi-bar">
+                <div class="kpi-item">
+                    <span class="kpi-lbl">Tổng Thu</span>
+                    <span class="kpi-val text-green" id="kpiIncome">+0 đ</span>
+                </div>
+                <div class="kpi-item">
+                    <span class="kpi-lbl">Tổng Chi</span>
+                    <span class="kpi-val text-red" id="kpiExpense">-0 đ</span>
+                </div>
+                <div class="kpi-item">
+                    <span class="kpi-lbl">Đã chọn</span>
+                    <span class="kpi-val text-blue" id="kpiSelected">0</span>
+                </div>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="filter-bar">
+                <label class="check-all-label">
+                    <input type="checkbox" id="checkAll" checked> Chọn tất cả
+                </label>
+                <div class="filter-pills">
+                    <button class="pill active" data-type="all">Tất cả</button>
+                    <button class="pill" data-type="Thu">Thu</button>
+                    <button class="pill" data-type="Chi">Chi</button>
+                </div>
+            </div>
+
+            <!-- Transaction List -->
+            <div class="tx-list" id="txList"></div>
+        </div>
+
+        <!-- Footer Action -->
+        <footer class="footer">
+            <button id="btnFillMisa" class="btn-primary" disabled>
+                <span>⚡ Tự động điền vào MISA</span>
+            </button>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

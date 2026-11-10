@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "Trợ Lý Điền Sao Kê Ngân Hàng - Sổ Thu Chi MISA",
+  "version": "1.0.0",
+  "description": "Tự động đọc file PDF sao kê ngân hàng (Techcombank, VCB, MB...) và tự động điền vào form ghi chép Sổ Thu Chi MISA.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://moneykeeperapp.misa.vn/*"
+  ],
+  "action": {
+    "default_title": "Bóc tách sao kê & Điền vào MISA",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://moneykeeperapp.misa.vn/*"
+      ],
+      "js": [
+        "content/page_bridge.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://moneykeeperapp.misa.vn/*"
+      ],
+      "js": [
+        "lib/pdf.min.js",
+        "lib/pdf_parser.js",
+        "content/content.js"
+      ],
+      "css": [
+        "content/content.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "content/page_bridge.js",
+        "lib/pdf.worker.min.js",
+        "icons/icon16.png",
+        "icons/icon48.png",
+        "icons/icon128.png",
+        "icons/logo.png"
+      ],
+      "matches": [
+        "https://moneykeeperapp.misa.vn/*"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "expense_rules": [
+    {
+      "category": "Ví điện tử & Nạp tiền",
+      "patterns": ["nap\\s+vi", "\\bmomo\\b", "zalopay", "viettel\\s*money", "vnpay", "shopeepay"]
+    },
+    {
+      "category": "Xăng xe & Đi lại",
+      "patterns": ["xang\\s+dau", "\\bxang\\b", "petro", "gui\\s+xe", "rua\\s+xe", "taxi", "\\bgrab\\b", "\\bbe\\b", "xanh\\s+sm", "ve\\s+xe", "ve\\s+may\\s+bay", "phi\\s+cau\\s+duong"]
+    },
+    {
+      "category": "Nhà cửa & Thuê phòng",
+      "patterns": ["tien\\s+nha", "thue\\s+nha", "tien\\s+phong", "chung\\s+cu", "dien\\s+nuoc", "tien\\s+dien", "tien\\s+nuoc", "phi\\s+quan\\s+ly", "internet", "mang\\s+wifi"]
+    },
+    {
+      "category": "Ăn uống",
+      "patterns": ["an\\s+toi", "an\\s+sang", "an\\s+trua", "tien\\s+an", "banh\\s+ts", "tra\\s+sua", "cafe", "ca\\s+phe", "nha\\s+hang", "quan\\s+an", "\\bpho\\b", "\\bbun\\b", "\\bcom\\b", "\\bfood\\b", "grabfood", "shopeefood", "starbucks", "highlands", "phuc\\s+long"]
+    },
+    {
+      "category": "Trả nợ & Vay mượn",
+      "patterns": ["tin\\s+dung", "tra\\s+no", "no\\s+hang\\s+thang", "khoan\\s+vay", "vay\\s+von", "tra\\s+gop", "lai\\s+vay", "tien\\s+tra\\b", "the\\s+tin\\s+dung", "\\bcredit\\b"]
+    },
+    {
+      "category": "Gia đình & Tiêu vặt",
+      "patterns": ["tieu\\s+vat", "tien\\s+cho", "sinh\\s+hoat", "bieu\\s+bo", "bieu\\s+me", "vo\\s+con", "con\\s+cai", "hoc\\s+phi", "sua\\s+ta", "tien\\s+tieu\\s+vat"]
+    },
+    {
+      "category": "Tiết kiệm & Đầu tư",
+      "patterns": ["topi", "tich\\s+luy", "dau\\s+tu", "chung\\s+khoan", "co\\s+phieu", "trai\\s+phieu", "vang", "tiet\\s+kiem", "sinh\\s+loi\\s+tu\\s+dong", "upoint"]
+    },
+    {
+      "category": "Mua sắm & Tiêu dùng",
+      "patterns": ["shopee", "lazada", "tiki", "sieu\\s+thi", "winmart", "coopmart", "bach\\s+hoa", "quan\\s+ao", "thoi\\s+trang", "mua\\s+sam"]
+    },
+    {
+      "category": "Y tế & Sức khỏe",
+      "patterns": ["thuoc", "nha\\s+khoa", "benh\\s+vien", "kham\\s+benh", "gym", "yoga", "the\\s+thao"]
+    }
+  ],
+  "income_rules": [
+    {
+      "category": "Lương & Thu nhập chính",
+      "patterns": ["luong", "salary", "payroll", "thuong", "bonus", "khoan\\s+luong"]
+    },
+    {
+      "category": "Tiền lãi & Lợi nhuận",
+      "patterns": ["sinh\\s+loi", "loi\\s+nhuan", "lai\\s+suat", "tiet\\s+kiem", "co\\s+tuc", "interest"]
+    },
+    {
+      "category": "Rút tiết kiệm & Đầu tư",
+      "patterns": ["topi", "rut\\s+tien", "thanh\\s+ly", "ban\\s+chung\\s+khoan"]
+    },
+    {
+      "category": "Thu đòi nợ & Được trả tiền",
+      "patterns": ["tra\\s+tien", "tra\\s+no", "hoan\\s+tien", "refund"]
+    },
+    {
+      "category": "Thu nhập khác & Chuyển khoản",
+      "patterns": ["chuyen\\s+tien", "chuyen\\s+khoan", "banh\\s+ts", "mua\\s+nha", "qr", "ibft"]
+    }
+  ]
+}
