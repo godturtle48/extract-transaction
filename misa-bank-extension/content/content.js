@@ -201,9 +201,19 @@
     function getDescriptionColumnIndex() { return getColumnIndexByName("diễn giải", 5); }
 
     // -------------------------------------------------------------
-    // EXTRACT DIRECTLY FROM MsSearchableSelect.props.data IN VUE 3
+    // EXTRACT ACCOUNTS (VIA MISA API /wallets/accounts & VUE BRIDGE)
     // (100% CSP COMPLIANT: Uses Chrome Manifest V3 MAIN world bridge)
     // -------------------------------------------------------------
+
+    // Passive listener for whenever Page Bridge broadcasts accounts
+    window.addEventListener("MISA_EXT_ACCOUNTS_LOADED", (e) => {
+        const accs = e.detail?.accounts || [];
+        if (accs.length > 0) {
+            console.log(`[MISA Ext] Nhận ${accs.length} tài khoản từ Page Bridge:`, accs);
+            availableAccounts = accs;
+            populateAccountSelect(accs);
+        }
+    });
 
     function requestAccountsFromPageBridge() {
         return new Promise((resolve) => {
@@ -218,11 +228,11 @@
             // Request via CustomEvent (zero inline scripts, completely safe against CSP)
             window.dispatchEvent(new CustomEvent("MISA_EXT_REQUEST_ACCOUNTS"));
 
-            // Timeout after 1.2s if no response
+            // Timeout after 3s if no response
             setTimeout(() => {
                 window.removeEventListener("MISA_EXT_ACCOUNTS_LOADED", handler);
-                resolve([]);
-            }, 1200);
+                resolve(availableAccounts.length > 0 ? availableAccounts : []);
+            }, 3000);
         });
     }
 
@@ -230,14 +240,14 @@
         const selectEl = document.getElementById("mbdAccountSelect");
         if (!selectEl) return;
 
-        selectEl.innerHTML = `<option value="">⏳ Đang trích xuất từ component MsSearchableSelect...</option>`;
+        selectEl.innerHTML = `<option value="">⏳ Đang tải danh sách tài khoản từ phiên đăng nhập MISA...</option>`;
 
-        // 1. Trích xuất trực tiếp từ component MsSearchableSelect và biến data trong Vue 3
-        const vueAccounts = await requestAccountsFromPageBridge();
-        if (vueAccounts.length > 0) {
-            console.log(`[MISA Ext] ✅ Đã lấy thành công ${vueAccounts.length} tài khoản từ MsSearchableSelect.data:`, vueAccounts);
-            availableAccounts = vueAccounts.map(a => a.label);
-            populateAccountSelect(vueAccounts);
+        // 1. Trích xuất qua API /wallets/accounts & Vue 3 bridge
+        const accounts = await requestAccountsFromPageBridge();
+        if (accounts.length > 0) {
+            console.log(`[MISA Ext] ✅ Đã lấy thành công ${accounts.length} tài khoản từ MISA:`, accounts);
+            availableAccounts = accounts;
+            populateAccountSelect(accounts);
             return;
         }
 
@@ -664,10 +674,15 @@
                 openDrawer();
                 sendResponse({ status: "opened" });
             } else if (request.action === "get_accounts") {
-                scanMisaAccounts().then(() => {
+                if (availableAccounts.length > 0) {
                     sendResponse({ accounts: availableAccounts });
-                });
-                return true;
+                    scanMisaAccounts();
+                } else {
+                    scanMisaAccounts().then(() => {
+                        sendResponse({ accounts: availableAccounts });
+                    });
+                    return true;
+                }
             } else if (request.action === "fill_transactions") {
                 if (request.transactions && request.transactions.length > 0) {
                     if (request.chosenAccount) {

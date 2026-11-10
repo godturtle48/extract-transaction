@@ -65,9 +65,10 @@ function populateAccountOptions(accounts) {
     accounts.forEach(acc => {
         const label = typeof acc === "string" ? acc : (acc.label || acc.walletName || acc.name || "");
         if (!label) return;
+        const desc = (typeof acc === "object" && acc.describe) ? ` (${acc.describe})` : "";
         const opt = document.createElement("option");
         opt.value = label;
-        opt.textContent = `🏦 ${label}`;
+        opt.textContent = `🏦 ${label}${desc}`;
         sel.appendChild(opt);
     });
 
