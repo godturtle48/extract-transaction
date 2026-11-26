@@ -39,12 +39,27 @@
             </select>
         </div>
 
+        <!-- Input Mode Tabs -->
+        <div class="source-tabs">
+            <button type="button" class="source-tab active" id="tabPopupFile">📄 File PDF</button>
+            <button type="button" class="source-tab" id="tabPopupPaste">📋 Dán bảng sao kê</button>
+        </div>
+
         <!-- Dropzone -->
         <div class="dropzone" id="popupDropzone">
             <input type="file" id="popupFileInput" accept=".pdf" style="display: none;">
             <div class="drop-icon">📄</div>
             <div class="drop-text">Chọn hoặc thả file PDF sao kê</div>
             <div class="drop-hint">Hỗ trợ Techcombank, VCB, MBBank...</div>
+        </div>
+
+        <!-- Paste Text Zone -->
+        <div class="paste-zone" id="popupPasteZone" style="display: none;">
+            <textarea id="popupPasteInput" class="paste-textarea" placeholder="Dán dữ liệu bảng sao kê copy từ Internet Banking / Excel vào đây..."></textarea>
+            <div class="paste-actions">
+                <button type="button" id="btnPopupClearText" class="btn-sm-secondary">Xóa</button>
+                <button type="button" id="btnPopupParseText" class="btn-sm-primary">⚡ Đọc dữ liệu</button>
+            </div>
         </div>
 
         <div id="popupLoading" class="loading" style="display: none;">

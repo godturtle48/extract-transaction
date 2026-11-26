@@ -65,12 +65,30 @@
                         </div>
                     </div>
 
+                    <!-- Input Mode Tabs -->
+                    <div class="mbd-source-tabs">
+                        <button type="button" class="mbd-tab-btn active" id="mbdTabFile">📄 Chọn file PDF</button>
+                        <button type="button" class="mbd-tab-btn" id="mbdTabPaste">📋 Dán nội dung sao kê</button>
+                    </div>
+
                     <!-- Dropzone -->
                     <div class="mbd-dropzone" id="mbdDropzone">
                         <input type="file" id="mbdFileInput" accept=".pdf" style="display: none;">
                         <div style="font-size: 28px; margin-bottom: 6px;">📄</div>
                         <div style="font-size: 14px; font-weight: 700; color: #008FD3;">Kéo thả file PDF sao kê vào đây hoặc bấm để chọn file</div>
                         <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Tự động nhận diện Techcombank, Vietcombank, MBBank, BIDV...</div>
+                    </div>
+
+                    <!-- Paste Text Zone -->
+                    <div class="mbd-paste-zone" id="mbdPasteZone" style="display: none;">
+                        <textarea id="mbdPasteInput" class="mbd-paste-textarea" placeholder="Dán dữ liệu bảng sao kê copy từ Internet Banking / Thẻ tín dụng / Excel vào đây (hỗ trợ cả có hoặc không có dòng tiêu đề)..."></textarea>
+                        <div class="mbd-paste-actions">
+                            <span class="mbd-paste-hint">Mẹo: Copy các dòng bảng từ trang ngân hàng rồi Ctrl+V vào ô trên.</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" id="mbdBtnClearText" class="mbd-btn-clear">Xóa</button>
+                                <button type="button" id="mbdBtnParseText" class="mbd-btn-parse">⚡ Đọc dữ liệu đã dán</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="mbdLoading" style="display: none; text-align: center; padding: 20px; font-weight: 600; color: #008FD3;">
@@ -149,6 +167,38 @@
 
         const dropzone = document.getElementById("mbdDropzone");
         const fileInput = document.getElementById("mbdFileInput");
+        const tabFile = document.getElementById("mbdTabFile");
+        const tabPaste = document.getElementById("mbdTabPaste");
+        const pasteZone = document.getElementById("mbdPasteZone");
+        const pasteInput = document.getElementById("mbdPasteInput");
+
+        tabFile.addEventListener("click", () => {
+            tabFile.classList.add("active");
+            tabPaste.classList.remove("active");
+            dropzone.style.display = "block";
+            pasteZone.style.display = "none";
+        });
+        tabPaste.addEventListener("click", () => {
+            tabPaste.classList.add("active");
+            tabFile.classList.remove("active");
+            dropzone.style.display = "none";
+            pasteZone.style.display = "block";
+            pasteInput.focus();
+        });
+
+        document.getElementById("mbdBtnParseText").addEventListener("click", () => {
+            handlePastedText(pasteInput.value);
+        });
+        document.getElementById("mbdBtnClearText").addEventListener("click", () => {
+            pasteInput.value = "";
+            pasteInput.focus();
+        });
+        pasteInput.addEventListener("paste", () => {
+            setTimeout(() => {
+                if (pasteInput.value.trim()) handlePastedText(pasteInput.value);
+            }, 50);
+        });
+
         dropzone.addEventListener("click", () => fileInput.click());
         fileInput.addEventListener("change", (e) => {
             if (e.target.files.length > 0) handleFile(e.target.files[0]);
@@ -348,6 +398,31 @@
         }
     }
 
+    function handlePastedText(rawText) {
+        if (!rawText || !rawText.trim()) {
+            alert("Vui lòng dán nội dung sao kê vào ô nhập!");
+            return;
+        }
+
+        try {
+            const result = BankPDFParser.parseText(rawText);
+            extractedTransactions = result.transactions;
+            displayResults(result);
+            showToast(`✅ Đã trích xuất ${result.transactions.length} giao dịch từ nội dung đã dán!`);
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi khi đọc dữ liệu đã dán: " + err.message);
+        }
+    }
+
+    function escapeAttr(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
     function displayResults(data) {
         document.getElementById("mbdResults").style.display = "block";
         document.getElementById("mbdStatCount").textContent = data.summary.count;
@@ -394,10 +469,10 @@
                     ${isThu ? '+' : '-'}${formatVND(t.amount)}
                 </td>
                 <td>
-                    <input type="text" class="tx-misa-cat" data-id="${t.id}" value="${t.misaCategory || t.category}" style="width: 100%; font-size: 11px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    <input type="text" class="tx-misa-cat" data-id="${t.id}" value="${escapeAttr(t.misaCategory || t.category)}" style="width: 100%; font-size: 11px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px;">
                 </td>
                 <td>
-                    <input type="text" class="tx-note" data-id="${t.id}" value="${t.note || t.description}" style="width: 100%; font-size: 11px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    <input type="text" class="tx-note" data-id="${t.id}" value="${escapeAttr(t.note || t.description)}" style="width: 100%; font-size: 11px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px;">
                 </td>
                 <td style="text-align: center;">
                     <button type="button" class="btn-fill-single" data-id="${t.id}" style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 6px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600;" title="Điền riêng giao dịch này vào dòng đầu tiên">Điền</button>

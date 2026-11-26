@@ -99,6 +99,29 @@ async function handleFile(file) {
     }
 }
 
+function handlePastedText(rawText) {
+    if (!rawText || !rawText.trim()) {
+        alert("Vui lòng dán nội dung sao kê vào ô nhập!");
+        return;
+    }
+    try {
+        const res = BankPDFParser.parseText(rawText);
+        transactions = res.transactions;
+        showTransactions();
+    } catch (err) {
+        console.error(err);
+        alert("Lỗi đọc dữ liệu đã dán: " + err.message);
+    }
+}
+
+function escapeHtml(str) {
+    return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
 function showTransactions() {
     document.getElementById("txSection").style.display = "flex";
     renderList();
@@ -150,8 +173,8 @@ function renderList() {
                     <span style="font-size: 10px; color: #64748b;">${t.date}</span>
                 </div>
                 <div class="tx-desc">
-                    <span class="tx-cat">${t.misaCategory || t.category}</span>
-                    <span>${t.note || t.description}</span>
+                    <span class="tx-cat">${escapeHtml(t.misaCategory || t.category)}</span>
+                    <span>${escapeHtml(t.note || t.description)}</span>
                 </div>
             </div>
         `;
@@ -205,6 +228,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const dropzone = document.getElementById("popupDropzone");
     const fileInput = document.getElementById("popupFileInput");
+    const pasteZone = document.getElementById("popupPasteZone");
+    const pasteInput = document.getElementById("popupPasteInput");
+    const tabFile = document.getElementById("tabPopupFile");
+    const tabPaste = document.getElementById("tabPopupPaste");
+
+    tabFile.addEventListener("click", () => {
+        tabFile.classList.add("active");
+        tabPaste.classList.remove("active");
+        dropzone.style.display = "block";
+        pasteZone.style.display = "none";
+    });
+    tabPaste.addEventListener("click", () => {
+        tabPaste.classList.add("active");
+        tabFile.classList.remove("active");
+        dropzone.style.display = "none";
+        pasteZone.style.display = "block";
+        pasteInput.focus();
+    });
+
+    document.getElementById("btnPopupParseText").addEventListener("click", () => {
+        handlePastedText(pasteInput.value);
+    });
+    document.getElementById("btnPopupClearText").addEventListener("click", () => {
+        pasteInput.value = "";
+        pasteInput.focus();
+    });
+    pasteInput.addEventListener("paste", () => {
+        setTimeout(() => {
+            if (pasteInput.value.trim()) handlePastedText(pasteInput.value);
+        }, 50);
+    });
+
     dropzone.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", (e) => {
         if (e.target.files.length > 0) handleFile(e.target.files[0]);
